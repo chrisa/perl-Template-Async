@@ -5,16 +5,23 @@ use warnings;
 use base qw/ Template::Directive /;
 
 sub async {
-
-    print STDERR "in async directive\n";
+    my ($self, $lnameargs, $block) = @_;
+    my ($name, $args, $alias) = @$lnameargs;
+    $name = shift @$name;
+    $alias ||= $name;
+    $args = $self->args($args);
+    $name .= ", $args" if $args;
 
     return <<EOF;
 
 # ASYNC
-$Template::Directive::OUTPUT do {
-  'async';
+\$stash->set($alias, $name);
+do {
+
+$block
+
 };
 EOF
-};
+}
 
 1;

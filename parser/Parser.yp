@@ -239,7 +239,7 @@ filter:	    FILTER lnameargs ';'
 ;
 
 async:	    ASYNC lnameargs ';' 
-	      block END		    { $factory->async(@_[2,4])           }
+	      block END		    { $factory->async(@_[2,4])            }
 ;
 
 defblock: defblockname 

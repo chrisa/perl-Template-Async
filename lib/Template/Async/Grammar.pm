@@ -5820,7 +5820,7 @@ sub
 		 'async', 5,
 sub
 #line 242 "Parser.yp"
-{ $factory->async(@_[2,4])           }
+{ $factory->async(@_[2,4])            }
 	],
 	[#Rule 84
 		 'defblock', 5,
