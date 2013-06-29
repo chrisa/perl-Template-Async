@@ -40,25 +40,23 @@ sub new {
 sub process {
     my ($self, $template, $args, $output) = @_;
 
+    ${$self->{_output}} = '';
     my $ret = $self->SUPER::process($template, $args);
-    for my $cv (@{ $self->{_async_cvs} })  {
+
+    while (my $cv = shift @{ $self->{_async_cvs} })  {
         $cv->recv;
     }
 
-    if (defined $self->{_output}) {
-        my $error;
-        my $outstream = $output || $self->{_real_output};
-        unless (ref $outstream) {
-            my $outpath = $self->{ OUTPUT_PATH };
-            $outstream = "$outpath/$outstream" if $outpath;
-        }
-
-        # send processed template to output stream, checking for error
-        return ($self->error($error))
-            if ($error = &Template::_output($outstream, $self->{_output}, {}));
-
-        return 1;
+    my $outstream = $output || $self->{_real_output};
+    unless (ref $outstream) {
+        my $outpath = $self->{ OUTPUT_PATH };
+        $outstream = "$outpath/$outstream" if $outpath;
     }
+
+    my $error = &Template::_output($outstream, $self->{_output}, {});
+    return ($self->error($error))
+         if $error;
+    return $ret;
 }
 
 1;
