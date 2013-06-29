@@ -11,15 +11,14 @@ my $json = JSON::XS->new->utf8->allow_blessed(1)->convert_blessed(1);
 
 sub get {
     my ($self, $url) = @_;
-    my $cv = $self->push_cv;
-    my $ph = Template::Async::Placeholder->new;
+    my ($cv, $ph) = $self->async_call;
 
-    my $g; $g = http_get(
+    my $guard; $guard = http_get(
         $url,
         sub {
             my ($body, $head) = @_;
             my $data = $json->decode($body);
-            $ph->resume($self->{context}, $data, $g);
+            $ph->resume($self->context, $data, $guard);
             $cv->send;
         }
     );

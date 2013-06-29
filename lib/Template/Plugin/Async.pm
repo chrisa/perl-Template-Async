@@ -11,11 +11,17 @@ sub new {
     return bless { context => $context }, $class;
 };
 
-sub push_cv {
+sub async_call {
     my ($self) = @_;
+    my $ph = Template::Async::Placeholder->new;
     my $cv = AnyEvent->condvar;
-    push @{ $self->{context}->stash->get('async_cvs') }, $cv;
-    return $cv;
+    push @{ $self->context->stash->get('async_cvs') }, $cv;
+    return ($cv, $ph);
+}
+
+sub context {
+    my ($self) = @_;
+    return $self->{context};
 }
 
 1;
