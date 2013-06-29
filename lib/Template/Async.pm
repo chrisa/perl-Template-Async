@@ -41,12 +41,12 @@ sub process {
     my ($self, $template, $args, $output) = @_;
 
     ${$self->{_output}} = '';
+    my $cv = $self->{_async_cv}->{cv} = AnyEvent->condvar;
 
-    $self->{_async_cv}->{cv} = AnyEvent->condvar;
-    $self->{_async_cv}->{cv}->begin;
+    $cv->begin;
     my $ret = $self->SUPER::process($template, $args);
-    $self->{_async_cv}->{cv}->end;
-    $self->{_async_cv}->{cv}->recv;
+    $cv->end;
+    $cv->recv;
 
     my $outstream = $output || $self->{_real_output};
     unless (ref $outstream) {
@@ -57,6 +57,7 @@ sub process {
     my $error = &Template::_output($outstream, $self->{_output}, {});
     return ($self->error($error))
          if $error;
+
     return $ret;
 }
 
