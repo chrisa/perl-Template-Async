@@ -12,17 +12,18 @@ sub new {
 
 sub defer {
     my ($self, $block, $alias) = @_;
-    $self->{alias} = $alias;
     $self->{block} = $block;
+    $self->{alias} = $alias;
     return $self->{string};
 }
 
 sub resume {
-    my ($self, $stash, $data) = @_;
+    my ($self, $context, $data) = @_;
+    my $stash = $context->stash;
+    my $error;
+    my $output = '';
 
     $stash->set($self->{alias}, $data);
-
-    my $output = '';
     eval $self->{block};
 
     my $document = $stash->get('output');
