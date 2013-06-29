@@ -12,11 +12,14 @@ sub async {
     $args = $self->args($args);
     $name .= ", $args" if $args;
 
+    my $eoblock = 'EOBLOCK';
+    $eoblock = '        ' . $eoblock if $Template::Directive::PRETTY;
+
     return <<EOF;
 
 # ASYNC
 my \$placeholder = \$stash->set($alias, $name);
-my \$block = <<'        EOBLOCK';
+my \$block = <<'$eoblock';
 $block
 EOBLOCK
 
