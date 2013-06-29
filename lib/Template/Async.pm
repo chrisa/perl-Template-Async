@@ -38,16 +38,16 @@ sub new {
 }
 
 sub process {
-    my $self = shift;
+    my ($self, $template, $args, $output) = @_;
 
-    my $ret = $self->SUPER::process(@_);
+    my $ret = $self->SUPER::process($template, $args);
     for my $cv (@{ $self->{_async_cvs} })  {
         $cv->recv;
     }
 
     if (defined $self->{_output}) {
         my $error;
-        my $outstream ||= $self->{_real_output};
+        my $outstream = $output || $self->{_real_output};
         unless (ref $outstream) {
             my $outpath = $self->{ OUTPUT_PATH };
             $outstream = "$outpath/$outstream" if $outpath;
