@@ -46,12 +46,7 @@ sub process {
     $self->{_async_cv}->{cv}->begin;
     my $ret = $self->SUPER::process($template, $args);
     $self->{_async_cv}->{cv}->end;
-
-    # "Twiggy, i promise that this will unblock before the end of the request..."
-    {
-        local $AnyEvent::CondVar::Base::WAITING = 0;
-        $self->{_async_cv}->{cv}->recv;
-    }
+    $self->{_async_cv}->{cv}->recv;
 
     my $outstream = $output || $self->{_real_output};
     unless (ref $outstream) {
