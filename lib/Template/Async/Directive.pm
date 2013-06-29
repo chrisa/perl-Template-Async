@@ -15,11 +15,13 @@ sub async {
     return <<EOF;
 
 # ASYNC
-\$stash->set($alias, $name);
-do {
-
+my \$placeholder = \$stash->set($alias, $name);
+my \$block = <<'        EOBLOCK';
 $block
+EOBLOCK
 
+$Template::Directive::OUTPUT do {
+   \$placeholder->defer(\$block, $alias);
 };
 EOF
 }
