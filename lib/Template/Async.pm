@@ -14,7 +14,7 @@ use AnyEvent;
 sub new {
     my ($class, $config) = @_;
 
-    my $cvs = [];
+    my $cv = { cv => undef };
     my $output = '';
 
     $config->{PARSER} = Template::Parser->new({
@@ -22,7 +22,7 @@ sub new {
         GRAMMAR => Template::Async::Grammar->new,
     });
     $config->{VARIABLES} = {
-        async_cvs => $cvs,
+        async_cv => $cv,
         output => \$output,
     };
 
@@ -30,7 +30,7 @@ sub new {
     $config->{OUTPUT} = \$output;
 
     my $self = $class->SUPER::new($config);
-    $self->{_async_cvs} = $cvs;
+    $self->{_async_cv} = $cv,
     $self->{_real_output} = $real_output;
     $self->{_output} = \$output;
 
@@ -41,10 +41,16 @@ sub process {
     my ($self, $template, $args, $output) = @_;
 
     ${$self->{_output}} = '';
-    my $ret = $self->SUPER::process($template, $args);
 
-    while (my $cv = shift @{ $self->{_async_cvs} })  {
-        $cv->recv;
+    $self->{_async_cv}->{cv} = AnyEvent->condvar;
+    $self->{_async_cv}->{cv}->begin;
+    my $ret = $self->SUPER::process($template, $args);
+    $self->{_async_cv}->{cv}->end;
+
+    # "Twiggy, i promise that this will unblock before the end of the request..."
+    {
+        local $AnyEvent::CondVar::Base::WAITING = 0;
+        $self->{_async_cv}->{cv}->recv;
     }
 
     my $outstream = $output || $self->{_real_output};

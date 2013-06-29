@@ -19,7 +19,7 @@ sub get {
             my ($body, $head) = @_;
             my $data = $json->decode($body);
             $ph->resume($self->context, $data, $guard);
-            $cv->send;
+            $cv->end;
         }
     );
 

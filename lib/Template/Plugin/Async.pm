@@ -13,9 +13,9 @@ sub new {
 
 sub async_call {
     my ($self) = @_;
+    my $cv = $self->context->stash->get('async_cv')->{cv};
     my $ph = Template::Async::Placeholder->new;
-    my $cv = AnyEvent->condvar;
-    push @{ $self->context->stash->get('async_cvs') }, $cv;
+    $cv->begin;
     return ($cv, $ph);
 }
 
