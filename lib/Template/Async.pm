@@ -11,6 +11,8 @@ use Template::Parser;
 
 use AnyEvent;
 
+our $VERSION = '0.01';
+
 sub new {
     my ($class, $config) = @_;
 
@@ -62,3 +64,55 @@ sub process {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Template::Async - asynchronous template block processing
+
+=head1 SYNOPSIS
+
+Given a template:
+
+    [% USE rest = Async.REST('http://remote.server/REST') -%]
+
+    [% ASYNC res = $rest.get('/resource') -%]
+      [% res.name %]
+    [% END -%]
+
+Process as usual, but with Template::Async:
+
+    use Template::Async;
+
+    my $template = Template::Async->new($config);
+
+    $template->process('main.tt')
+      || die $template->error;
+
+=head1 DESCRIPTION
+
+Template Toolkit addon, providing deferred processing of "ASYNC"
+blocks.
+
+=head1 DEVELOPMENT
+
+The source to Template::Async is in github:
+
+  https://github.com/chrisa/perl-Template-Async
+
+=head1 AUTHOR
+
+Chris Andrews <chris@nodnol.org>
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (C) 2013, Chris Andrews <chris@nodnol.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut
