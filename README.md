@@ -43,9 +43,8 @@ Two plugins are provided:
 Caveats
 -------
 
-Error handling is non-existent so far. A failure in a remote call,
-either transport or parsing, will annoy AnyEvent and wedge
-things. This will be fixed.
+Error handling is minimal. An exception in a plugin will annoy
+AnyEvent and wedge things. This will be fixed.
 
 Depending on what else is going on, this library may not play with in
 a larger AnyEvent environment. For example, using this in an
