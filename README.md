@@ -19,6 +19,16 @@ server returns, and makes use of the returned data.
 Multiple ASYNC block actions may be outstanding concurrently, and
 their blocks will be processed as the actions complete.
 
+You'd process this template in much the same way as for a regular
+Template Toolkit template:
+
+    use Template::Async;
+
+    my $template = Template::Async->new(...);
+
+    $template->process('main.tt')
+      || die $template->error;
+
 Plugins
 -------
 
