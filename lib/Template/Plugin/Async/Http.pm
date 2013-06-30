@@ -5,9 +5,6 @@ use warnings;
 use base qw/ Template::Plugin::Async /;
 
 use AnyEvent::HTTP;
-use JSON::XS;
-
-my $json = JSON::XS->new->utf8->allow_blessed(1)->convert_blessed(1);
 
 sub get {
     my ($self, $url) = @_;
@@ -17,8 +14,7 @@ sub get {
         $url,
         sub {
             my ($body, $head) = @_;
-            my $data = $json->decode($body);
-            $ph->resume($self->context, $data, $guard);
+            $ph->resume($self->context, $body, $guard);
             $cv->end;
         }
     );
