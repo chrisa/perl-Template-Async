@@ -6,6 +6,7 @@ use base qw/ Template::Plugin::Async::Http /;
 
 use AnyEvent::HTTP;
 use JSON::Any;
+use Try::Tiny;
 
 my $json = JSON::Any->new( utf8 => 1 );
 
@@ -26,7 +27,20 @@ sub get {
         $url,
         sub {
             my ($body, $head) = @_;
-            my $data = $json->decode($body);
+            my $data;
+
+            if (defined $body) {
+                try {
+                    $data = $json->decode($body);
+                }
+                catch {
+                    $data = { error => "error: $_" };
+                };
+            }
+            else {
+                $data = { error => "Status: $head->{Status}" };
+            }
+
             $ph->resume($self->context, $data, $guard);
             $cv->end;
         }

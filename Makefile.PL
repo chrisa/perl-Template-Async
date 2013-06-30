@@ -10,5 +10,6 @@ WriteMakefile(
         'AnyEvent' => '0',
         'AnyEvent::HTTP' => '0',
         'JSON::Any' => '0',
+        'Try::Tiny' => '0',
     }
 );
