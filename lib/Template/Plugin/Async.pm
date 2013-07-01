@@ -13,10 +13,16 @@ sub new {
 
 sub async_call {
     my ($self) = @_;
-    my $cv = $self->context->stash->get('async_cv')->{cv};
+    my $cvs = $self->context->stash->get('async_cv');
     my $ph = Template::Async::Placeholder->new;
-    $cv->begin;
-    return ($cv, $ph);
+    $cvs->{completion}->begin;
+    return ($cvs->{completion}, $ph);
+}
+
+sub process_wait {
+    my ($self) = @_;
+    my $cvs = $self->context->stash->get('async_cv');
+    $cvs->{process}->recv;
 }
 
 sub context {

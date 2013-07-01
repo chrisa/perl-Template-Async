@@ -14,7 +14,8 @@ sub get {
         $url,
         sub {
             my ($body, $head) = @_;
-            $ph->resume($self->context, $body, $guard);
+            $self->process_wait($guard);
+            $ph->resume($self->context, $body);
             $cv->end;
         }
     );

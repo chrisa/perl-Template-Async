@@ -28,6 +28,7 @@ sub get {
         sub {
             my ($body, $head) = @_;
             my $data;
+            $self->process_wait($guard);
 
             if (defined $body) {
                 try {

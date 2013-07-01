@@ -16,7 +16,7 @@ our $VERSION = '0.01';
 sub new {
     my ($class, $config) = @_;
 
-    my $cv = { cv => undef };
+    my $cv = { completion => undef, process => undef };
     my $output = '';
 
     $config->{PARSER} = Template::Parser->new({
@@ -43,12 +43,18 @@ sub process {
     my ($self, $template, $args, $output) = @_;
 
     ${$self->{_output}} = '';
-    my $cv = $self->{_async_cv}->{cv} = AnyEvent->condvar;
 
-    $cv->begin;
+    my $cvs = $self->{_async_cv};
+    $cvs->{completion} = AnyEvent->condvar;
+    $cvs->{process} = AnyEvent->condvar;
+
+    $cvs->{completion}->begin;
     my $ret = $self->SUPER::process($template, $args);
-    $cv->end;
-    $cv->recv;
+    die $self->error unless $ret;
+
+    $cvs->{process}->send;
+    $cvs->{completion}->end;
+    $cvs->{completion}->recv;
 
     my $outstream = $output || $self->{_real_output};
     unless (ref $outstream) {
