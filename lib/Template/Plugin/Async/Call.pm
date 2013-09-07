@@ -8,17 +8,15 @@ use AnyEvent;
 
 sub test {
     my ($self) = @_;
-    my ($cv, $ph) = $self->async_call;
+    my $ph = $self->placeholder;
 
     my $guard; $guard = AnyEvent->timer(
         after => 1,
         cb => sub {
-            $self->process_wait($guard);
-            $ph->resume($self->context, 'test');
-            $cv->end;
+            $ph->resume($self->context, $guard, 'test');
         }
     );
-    
+
     return $ph;
 }
 

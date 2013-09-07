@@ -4,25 +4,22 @@ use warnings;
 
 use base qw/ Template::Plugin /;
 
-use AnyEvent;
-
 sub new {
     my ($class, $context) = @_;
     return bless { context => $context }, $class;
 };
 
-sub async_call {
+sub placeholder {
     my ($self) = @_;
-    my $cvs = $self->context->stash->get('async_cv');
     my $ph = Template::Async::Placeholder->new;
-    $cvs->{completion}->begin;
-    return ($cvs->{completion}, $ph);
+    $self->promise($ph->promise);
+    return $ph;
 }
 
-sub process_wait {
-    my ($self) = @_;
-    my $cvs = $self->context->stash->get('async_cv');
-    $cvs->{process}->recv;
+sub promise {
+    my ($self, $promise) = @_;
+    my $promises = $self->context->stash->get('promises');
+    push @{$promises}, $promise;
 }
 
 sub context {

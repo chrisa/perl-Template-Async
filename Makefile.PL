@@ -11,5 +11,6 @@ WriteMakefile(
         'AnyEvent::HTTP' => '0',
         'JSON::Any' => '0',
         'Try::Tiny' => '0',
+        'Promises' => '0',
     }
 );

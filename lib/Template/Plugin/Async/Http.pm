@@ -8,15 +8,13 @@ use AnyEvent::HTTP;
 
 sub get {
     my ($self, $url) = @_;
-    my ($cv, $ph) = $self->async_call;
+    my $ph = $self->placeholder;
 
     my $guard; $guard = http_get(
         $url,
         sub {
             my ($body, $head) = @_;
-            $self->process_wait($guard);
-            $ph->resume($self->context, $body);
-            $cv->end;
+            $ph->resume($self->context, $guard, $body);
         }
     );
 

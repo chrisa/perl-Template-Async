@@ -21,14 +21,13 @@ sub get {
     my ($self, $resource) = @_;
     my $url = $self->{base_url} . $resource;
 
-    my ($cv, $ph) = $self->async_call;
+    my $ph = $self->placeholder;
 
     my $guard; $guard = http_get(
         $url,
         sub {
             my ($body, $head) = @_;
             my $data;
-            $self->process_wait($guard);
 
             if (defined $body) {
                 try {
@@ -42,8 +41,7 @@ sub get {
                 $data = { error => "Status: $head->{Status}" };
             }
 
-            $ph->resume($self->context, $data, $guard);
-            $cv->end;
+            $ph->resume($self->context, $guard, $data);
         }
     );
 
