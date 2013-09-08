@@ -29,6 +29,12 @@ Template Toolkit template:
     $template->process('main.tt')
       || die $template->error;
 
+Promises
+--------
+
+This library uses Promises, https://metacpan.org/module/Promises, as
+well as AnyEvent.
+
 Plugins
 -------
 
@@ -39,6 +45,15 @@ Two plugins are provided:
 
  * Http
  * REST
+ * Stash
+
+Http and REST both implement async HTTP calls initiated by ASYNC
+blocks in the template -- REST addtionally JSON-parses the response.
+
+Stash recovers a promise from the stash, and invokes the ASYNC block
+with the results when it resolves. You can use this to start async
+operations before template processing starts, by passing the
+associated promises into the stash.
 
 Caveats
 -------
