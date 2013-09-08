@@ -22,18 +22,20 @@ subtest 'run process' => sub {
     ok $t->process(\$template, {}, \$output)
          => 'processed test template ok';
 
-    is $output, "val: test\n"
+    diag $output;
+
+    like $output, qr/MSFT: [0-9.]+/
          => 'got expected output';
-    
+
 };
 
 done_testing();
 
 sub template {
     return <<'EOT';
-[% USE call = Async.Call -%]
-[% ASYNC val = $call.test -%]
-val: [% val %]
+[% USE rest = Async.REST('http://query.yahooapis.com/v1/public/yql?q=') -%]
+[% ASYNC val = $rest.get('select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22MSFT%22)%0A%09%09&env=http%3A%2F%2Fdatatables.org%2Falltables.env&format=json') -%]
+[% val.query.results.quote.symbol %]: [% val.query.results.quote.Ask %]
 [% END -%]
 EOT
 }
