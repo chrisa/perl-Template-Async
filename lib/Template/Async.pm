@@ -23,6 +23,7 @@ sub new {
     $config->{PARSER} = Template::Parser->new({
         FACTORY => 'Template::Async::Directive',
         GRAMMAR => Template::Async::Grammar->new,
+        %$config,
     });
     $config->{VARIABLES} = {
         output => \$output,
